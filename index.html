@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>websocket demo</title>
+        <body>
+            <button onclick="initCard()">初始化</button>
+            <button onclick="readCard()">读取卡片</button>
+            <button onclick="writeCard()">写入卡片</button>
+            <button onclick="clearCard()">清空卡</button>
+            <button onclick="getCardId()">获取卡片Id</button>
+
+            <input type="text" id="cardno" >
+        </body>
+
+        <script>
+            var ws = new WebSocket('ws:192.168.10.113:8989/websocket');
+            ws.onopen = function(evt){
+                ws.send('{}');
+                console.log("on open");
+            }
+            ws.onclose = function(evt){
+                console.log("on close");
+            }
+            ws.onmessage = function(evt){
+                console.log(evt.data);
+                const datas =JSON.parse(evt.data)
+                if(datas['type']=="readCard"){
+                    //datas['data']['cardno'] 
+                    document.getElementById("cardno").value = datas['data']['cardno'] 
+                }
+            }
+            function sendSocket(msg){
+                ws.send(JSON.stringify(msg))
+            }
+            function initCard()
+            {
+                msg = {
+                    "action":"initCard"
+                }
+                sendSocket(msg)
+            }
+            function writeCard()
+            {
+                msg = {
+                    "action":"writeCard",
+                    "room":"2001",
+                    "cardNo":"",  //卡id 
+                    "overflag":1,  //是否覆盖
+                    "lift":'1,2',    //电梯楼层 1楼,2楼
+                    "guestName":'王磊',   //名称 非必填
+                    "guestId" : "4092",
+                    "startDate" : "202309011200", //开始时间
+                    "endDate" : "202309051400" //结束时间
+                }
+                sendSocket(msg)
+            }
+            function readCard()
+            {
+                msg = {
+                    "action":"readCard",
+                }
+                sendSocket(msg)
+            }
+
+            function getCardId()
+            {
+                msg = {
+                    "action":"getCardId",
+                }
+                sendSocket(msg)
+            }
+
+            function clearCard(){
+                msg = {
+                    "action":"clearCard",
+                    "cardNo" :document.getElementById("cardno").value  //清除卡号id
+                }
+                sendSocket(msg)
+            }
+        </script>
+    </head>
+</html>
