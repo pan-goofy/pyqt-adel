@@ -1,9 +1,7 @@
-import sys
 from PyQt5.QtCore import QThread,pyqtSignal
 import asyncio
 import websockets 
 import json
-import time
 import threading
 
 Clients =[]
